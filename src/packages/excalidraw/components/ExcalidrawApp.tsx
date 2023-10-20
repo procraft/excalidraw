@@ -469,6 +469,14 @@ const ExcalidrawWrapper = (props: ExcalidrawAppProps) => {
   }, [langCode]);
 
   useEffect(() => {
+    if (!excalidrawAPI || !props.getExcalidrawAPI) {
+      return;
+    }
+
+    props.getExcalidrawAPI(excalidrawAPI);
+  }, [excalidrawAPI, props]);
+
+  useEffect(() => {
     if (!collabAPI || !props.getCollabAPI) {
       return;
     }
