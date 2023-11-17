@@ -71,6 +71,7 @@ export const getCollabServer = async (
   polling: boolean;
 }> => {
   if (collabServerUrl) {
+    console.info("[Excalidraw] Use collab server from props:", collabServerUrl);
     return {
       url: collabServerUrl,
       polling: true,
@@ -78,6 +79,10 @@ export const getCollabServer = async (
   }
 
   if (process.env.REACT_APP_WS_SERVER_URL) {
+    console.info(
+      "[Excalidraw] Use collab server from env:",
+      process.env.REACT_APP_WS_SERVER_URL,
+    );
     return {
       url: process.env.REACT_APP_WS_SERVER_URL,
       polling: true,
@@ -85,6 +90,10 @@ export const getCollabServer = async (
   }
 
   try {
+    console.info(
+      "[Excalidraw] Use collab server from url:",
+      `${process.env.REACT_APP_PORTAL_URL}/collab-server`,
+    );
     const resp = await fetch(
       `${process.env.REACT_APP_PORTAL_URL}/collab-server`,
     );
