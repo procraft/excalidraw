@@ -431,6 +431,7 @@ class App extends React.Component<AppProps, AppState> {
         <canvas
           className="excalidraw__canvas"
           style={{
+            borderTop: "1px solid red",
             width: canvasDOMWidth,
             height: canvasDOMHeight,
             cursor: CURSOR_TYPE.GRAB,
@@ -453,6 +454,7 @@ class App extends React.Component<AppProps, AppState> {
       <canvas
         className="excalidraw__canvas"
         style={{
+          borderTop: "1px solid red",
           width: canvasDOMWidth,
           height: canvasDOMHeight,
         }}
