@@ -42,6 +42,7 @@ export async function getStorageBackend() {
   }
 
   const storageBackendName = process.env.REACT_APP_STORAGE_BACKEND || "";
+  console.info("[Excalidraw] Use backend storage:", storageBackendName);
 
   if (storageBackends.has(storageBackendName)) {
     storageBackend = storageBackends.get(storageBackendName) as StorageBackend;

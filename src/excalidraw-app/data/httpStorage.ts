@@ -22,6 +22,8 @@ import { StoredScene } from "./StorageBackend";
 const HTTP_STORAGE_BACKEND_URL = process.env.REACT_APP_HTTP_STORAGE_BACKEND_URL;
 const SCENE_VERSION_LENGTH_BYTES = 4;
 
+console.info("[Excalidraw] Use backend host:", HTTP_STORAGE_BACKEND_URL);
+
 // There is a lot of intentional duplication with the firebase file
 // to prevent modifying upstream files and ease futur maintenance of this fork
 
