@@ -74,7 +74,6 @@ import { ExportToExcalidrawPlus } from "./components/ExportToExcalidrawPlus";
 import { updateStaleImageStatuses } from "./data/FileManager";
 import { newElementWith } from "../element/mutateElement";
 import { isInitializedImageElement } from "../element/typeChecks";
-import { loadFilesFromFirebase } from "./data/firebase";
 import { LocalData } from "./data/LocalData";
 import { isBrowserStorageStateNewer } from "./data/tabSync";
 import clsx from "clsx";
@@ -82,6 +81,9 @@ import { Provider, useAtom } from "jotai";
 import { jotaiStore, useAtomWithInitialValue } from "../jotai";
 import { reconcileElements } from "./collab/reconciliation";
 import { parseLibraryTokensFromUrl, useHandleLibrary } from "../data/library";
+
+import { storageBackend } from "./data/config";
+import { ResolutionType } from "../utility-types";
 
 window.EXCALIDRAW_THROTTLE_RENDER = true;
 
@@ -306,22 +308,24 @@ const ExcalidrawWrapper = () => {
           }, [] as FileId[]) || [];
 
         if (data.isExternalScene) {
-          loadFilesFromFirebase(
-            `${FIREBASE_STORAGE_PREFIXES.shareLinkFiles}/${data.id}`,
-            data.key,
-            fileIds,
-          ).then((response) => {
-            if (!response) {
-              return;
-            }
-            const { loadedFiles, erroredFiles } = response;
-            excalidrawAPI.addFiles(loadedFiles);
-            updateStaleImageStatuses({
-              excalidrawAPI,
-              erroredFiles,
-              elements: excalidrawAPI.getSceneElementsIncludingDeleted(),
+          storageBackend
+            ?.loadFilesFromStorageBackend(
+              `${FIREBASE_STORAGE_PREFIXES.shareLinkFiles}/${data.id}`,
+              data.key,
+              fileIds,
+            )
+            .then((result) => {
+              if (!result) {
+                return;
+              }
+              const { loadedFiles, erroredFiles } = result;
+              excalidrawAPI.addFiles(loadedFiles);
+              updateStaleImageStatuses({
+                excalidrawAPI,
+                erroredFiles,
+                elements: excalidrawAPI.getSceneElementsIncludingDeleted(),
+              });
             });
-          });
         } else if (isInitialLoad) {
           if (fileIds.length) {
             LocalData.fileStorage.getFiles(fileIds).then((response) => {

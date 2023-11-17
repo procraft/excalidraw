@@ -1,5 +1,6 @@
 import { Point } from "../types";
 import { FONT_FAMILY, THEME, VERTICAL_ALIGN } from "../constants";
+import { MarkNonNullable } from "../utility-types";
 
 export type ChartType = "bar" | "line";
 export type FillStyle = "hachure" | "cross-hatch" | "solid";
