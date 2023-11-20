@@ -70,38 +70,47 @@ export const getCollabServer = async (
   url: string;
   polling: boolean;
 }> => {
-  if (collabServerUrl) {
-    console.info("[Excalidraw] Use collab server from props:", collabServerUrl);
-    return {
-      url: collabServerUrl,
-      polling: true,
-    };
-  }
+  console.info(
+    "[Excalidraw] Use collab server from hardcode:",
+    "http://localhost:3002",
+  );
+  return {
+    url: "http://localhost:3002",
+    polling: true,
+  };
 
-  if (process.env.REACT_APP_WS_SERVER_URL) {
-    console.info(
-      "[Excalidraw] Use collab server from env:",
-      process.env.REACT_APP_WS_SERVER_URL,
-    );
-    return {
-      url: process.env.REACT_APP_WS_SERVER_URL,
-      polling: true,
-    };
-  }
-
-  try {
-    console.info(
-      "[Excalidraw] Use collab server from url:",
-      `${process.env.REACT_APP_PORTAL_URL}/collab-server`,
-    );
-    const resp = await fetch(
-      `${process.env.REACT_APP_PORTAL_URL}/collab-server`,
-    );
-    return await resp.json();
-  } catch (error) {
-    console.error(error);
-    throw new Error(t("errors.cannotResolveCollabServer"));
-  }
+  // if (collabServerUrl) {
+  //   console.info("[Excalidraw] Use collab server from props:", collabServerUrl);
+  //   return {
+  //     url: collabServerUrl,
+  //     polling: true,
+  //   };
+  // }
+  //
+  // if (process.env.REACT_APP_WS_SERVER_URL) {
+  //   console.info(
+  //     "[Excalidraw] Use collab server from env:",
+  //     process.env.REACT_APP_WS_SERVER_URL,
+  //   );
+  //   return {
+  //     url: process.env.REACT_APP_WS_SERVER_URL,
+  //     polling: true,
+  //   };
+  // }
+  //
+  // try {
+  //   console.info(
+  //     "[Excalidraw] Use collab server from url:",
+  //     `${process.env.REACT_APP_PORTAL_URL}/collab-server`,
+  //   );
+  //   const resp = await fetch(
+  //     `${process.env.REACT_APP_PORTAL_URL}/collab-server`,
+  //   );
+  //   return await resp.json();
+  // } catch (error) {
+  //   console.error(error);
+  //   throw new Error(t("errors.cannotResolveCollabServer"));
+  // }
 };
 
 export type EncryptedData = {

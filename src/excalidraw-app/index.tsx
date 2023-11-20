@@ -245,6 +245,10 @@ const ExcalidrawWrapper = () => {
   }
 
   useEffect(() => {
+    console.info(
+      "[Excalidraw] ExcalidrawWrapper/1, isCollaborating =",
+      isCollaborationLink(window.location.href),
+    );
     trackEvent("load", "frame", getFrame());
     // Delayed so that the app has a time to load the latest SW
     setTimeout(() => {
