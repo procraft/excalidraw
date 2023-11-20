@@ -431,7 +431,6 @@ class App extends React.Component<AppProps, AppState> {
         <canvas
           className="excalidraw__canvas"
           style={{
-            borderTop: "1px solid red",
             width: canvasDOMWidth,
             height: canvasDOMHeight,
             cursor: CURSOR_TYPE.GRAB,
@@ -454,7 +453,6 @@ class App extends React.Component<AppProps, AppState> {
       <canvas
         className="excalidraw__canvas"
         style={{
-          borderTop: "1px solid red",
           width: canvasDOMWidth,
           height: canvasDOMHeight,
         }}
@@ -4966,7 +4964,7 @@ class App extends React.Component<AppProps, AppState> {
     imageFile: File,
     showCursorImagePreview?: boolean,
   ) => {
-    console.info("[Excalidraw] insertImageElement", imageFile.name);
+    console.info("[Excalidraw/app] insertImageElement", imageFile.name);
     this.scene.replaceAllElements([
       ...this.scene.getElementsIncludingDeleted(),
       imageElement,

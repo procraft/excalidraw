@@ -109,6 +109,7 @@ class Collab extends PureComponent<Props, CollabState> {
 
   constructor(props: Props) {
     super(props);
+    console.info("[Excalidraw/app] Collab constructor");
     this.state = {
       errorMessage: "",
       username: importUsernameFromLocalStorage() || "",
@@ -371,6 +372,12 @@ class Collab extends PureComponent<Props, CollabState> {
   startCollaboration = async (
     existingRoomLinkData: null | { roomId: string; roomKey: string },
   ): Promise<ImportedDataState | null> => {
+    console.info(
+      "[Excalidraw/app] startCollaboration, socket =",
+      this.portal.socket,
+      ", existingRoomLinkData =",
+      existingRoomLinkData,
+    );
     if (this.portal.socket) {
       return null;
     }
@@ -473,6 +480,10 @@ class Collab extends PureComponent<Props, CollabState> {
           case "INVALID_RESPONSE":
             return;
           case WS_SCENE_EVENT_TYPES.INIT: {
+            console.info(
+              "[Excalidraw/app] socket message: Init, socketInitialized =",
+              this.portal.socketInitialized,
+            );
             if (!this.portal.socketInitialized) {
               this.initializeRoom({ fetchScene: false });
               const remoteElements = decryptedData.payload.elements;
@@ -529,6 +540,7 @@ class Collab extends PureComponent<Props, CollabState> {
     );
 
     this.portal.socket.on("first-in-room", async () => {
+      console.info("[Excalidraw/app] socket message: First in room");
       if (this.portal.socket) {
         this.portal.socket.off("first-in-room");
       }
@@ -557,6 +569,7 @@ class Collab extends PureComponent<Props, CollabState> {
         roomLinkData: { roomId: string; roomKey: string } | null;
       }
     | { fetchScene: false; roomLinkData?: null }) => {
+    console.info("[Excalidraw/app] initializeRoom");
     clearTimeout(this.socketInitializationTimer!);
     if (this.portal.socket && this.fallbackInitializationHandler) {
       this.portal.socket.off(

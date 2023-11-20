@@ -201,7 +201,7 @@ const ExcalidrawWrapper = (props: ExcalidrawAppProps) => {
 
   useEffect(() => {
     console.info(
-      "[Excalidraw] ExcalidrawWrapper/2, href =",
+      "[Excalidraw/pkg] ExcalidrawWrapper, href =",
       window.location.href,
       ", isCollaborating =",
       isCollaborationLink(window.location.href),

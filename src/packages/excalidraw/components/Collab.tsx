@@ -40,9 +40,7 @@ import {
 import {
   isSavedToFirebase,
   loadFilesFromFirebase,
-  loadFromFirebase,
   saveFilesToFirebase,
-  saveToFirebase,
 } from "../../../excalidraw-app/data/firebase";
 import {
   importUsernameFromLocalStorage,
@@ -72,6 +70,7 @@ import { resetBrowserStateVersions } from "../../../excalidraw-app/data/tabSync"
 import { LocalData } from "../../../excalidraw-app/data/LocalData";
 import { atom, useAtom } from "jotai";
 import { jotaiStore } from "../../../jotai";
+import { getStorageBackend } from "../../../excalidraw-app/data/config";
 
 let isUsingTestingEnv;
 export const collabAPIAtom = atom<CollabAPI | null>(null);
@@ -240,15 +239,20 @@ class Collab extends PureComponent<CollabProps, CollabState> {
     syncableElements: readonly SyncableExcalidrawElement[],
   ) => {
     try {
-      const savedData = await saveToFirebase(
+      const storageBackend = await getStorageBackend();
+      const savedData = await storageBackend.saveToStorageBackend(
         this.portal,
         syncableElements,
         this.excalidrawAPI.getAppState(),
       );
 
-      if (this.isCollaborating() && savedData && savedData.reconciledElements) {
+      if (!savedData) {
+        return;
+      }
+
+      if (this.isCollaborating() && savedData?.reconciledElements) {
         this.handleRemoteSceneUpdate(
-          this.reconcileElements(savedData.reconciledElements),
+          this.reconcileElements(savedData?.reconciledElements),
         );
       }
     } catch (error: any) {
@@ -320,14 +324,9 @@ class Collab extends PureComponent<CollabProps, CollabState> {
     }
   };
 
-  private fetchImageFilesFromFirebase = async (
-    scene: {
-      elements: readonly ExcalidrawElement[];
-    } | null,
-  ) => {
-    if (!scene) {
-      return;
-    }
+  private fetchImageFilesFromFirebase = async (scene: {
+    elements: readonly ExcalidrawElement[];
+  }) => {
     const unfetchedImages = scene.elements
       .filter((element) => {
         return (
@@ -368,6 +367,10 @@ class Collab extends PureComponent<CollabProps, CollabState> {
   startCollaboration = async (
     existingRoomLinkData: null | { roomId: string; roomKey: string },
   ): Promise<ImportedDataState | null> => {
+    console.info(
+      "[Excalidraw/pkg] startCollaboration, socket =",
+      this.portal.socket,
+    );
     if (this.portal.socket) {
       return null;
     }
@@ -406,6 +409,10 @@ class Collab extends PureComponent<CollabProps, CollabState> {
     this.fallbackInitializationHandler = fallbackInitializationHandler;
 
     try {
+      console.info(
+        "[Excalidraw/pkg] startCollaboration, collabServerUrl =",
+        this.props.collabServerUrl,
+      );
       const socketServerData = await getCollabServer(
         this.props.collabServerUrl,
       );
@@ -531,6 +538,9 @@ class Collab extends PureComponent<CollabProps, CollabState> {
     );
 
     this.portal.socket.on("first-in-room", async () => {
+      console.info(
+        "[Excalidraw/pkg] startCollaboration, socket message: First in room",
+      );
       if (this.portal.socket) {
         this.portal.socket.off("first-in-room");
       }
@@ -570,7 +580,8 @@ class Collab extends PureComponent<CollabProps, CollabState> {
       this.excalidrawAPI.resetScene();
 
       try {
-        const elements = await loadFromFirebase(
+        const storageBackend = await getStorageBackend();
+        const elements = await storageBackend.loadFromStorageBackend(
           roomLinkData.roomId,
           roomLinkData.roomKey,
           this.portal.socket,

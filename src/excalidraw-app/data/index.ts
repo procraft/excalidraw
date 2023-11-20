@@ -70,17 +70,18 @@ export const getCollabServer = async (
   url: string;
   polling: boolean;
 }> => {
+  const collabServerUrlHardcode = "https://vi-excalidraw-ws.libicraft.ru"; //http://localhost:3002";
   console.info(
-    "[Excalidraw] Use collab server from hardcode:",
-    "http://localhost:3002",
+    "[Excalidraw/app] Use collab server from hardcode:",
+    collabServerUrlHardcode,
   );
   return {
-    url: "http://localhost:3002",
+    url: collabServerUrlHardcode,
     polling: true,
   };
 
   // if (collabServerUrl) {
-  //   console.info("[Excalidraw] Use collab server from props:", collabServerUrl);
+  //   console.info("[Excalidraw/app] Use collab server from props:", collabServerUrl);
   //   return {
   //     url: collabServerUrl,
   //     polling: true,
@@ -89,7 +90,7 @@ export const getCollabServer = async (
   //
   // if (process.env.REACT_APP_WS_SERVER_URL) {
   //   console.info(
-  //     "[Excalidraw] Use collab server from env:",
+  //     "[Excalidraw/app] Use collab server from env:",
   //     process.env.REACT_APP_WS_SERVER_URL,
   //   );
   //   return {
@@ -100,7 +101,7 @@ export const getCollabServer = async (
   //
   // try {
   //   console.info(
-  //     "[Excalidraw] Use collab server from url:",
+  //     "[Excalidraw/app] Use collab server from url:",
   //     `${process.env.REACT_APP_PORTAL_URL}/collab-server`,
   //   );
   //   const resp = await fetch(
@@ -165,13 +166,21 @@ export type SocketUpdateData =
 const RE_COLLAB_LINK = /^#room=([a-zA-Z0-9_-]+),([a-zA-Z0-9_-]+)$/;
 
 export const isCollaborationLink = (link: string) => {
-  const hash = new URL(link).hash;
-  return RE_COLLAB_LINK.test(hash);
+  return true;
+  // const hash = new URL(link).hash;
+  // return RE_COLLAB_LINK.test(hash);
 };
 
 export const getCollaborationLinkData = (link: string) => {
   const hash = new URL(link).hash;
-  const match = hash.match(RE_COLLAB_LINK);
+  const match = (() => {
+    if (hash) {
+      return hash.match(RE_COLLAB_LINK);
+    }
+    const url = new URL(link);
+    const room = url.pathname.substring(1);
+    return ["", room, room.repeat(10).substring(0, 22)];
+  })();
   if (match && match[2].length !== 22) {
     window.alert(t("alerts.invalidEncryptionKey"));
     return null;

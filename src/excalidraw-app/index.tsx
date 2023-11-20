@@ -181,6 +181,7 @@ export const initializeScene = async (opts: {
     }
   }
 
+  console.info("[Excalidraw/app] ExcalidrawApp, roomLinkData =", roomLinkData);
   if (roomLinkData) {
     return {
       scene: await opts.collabAPI.startCollaboration(roomLinkData),
@@ -246,7 +247,7 @@ const ExcalidrawWrapper = () => {
 
   useEffect(() => {
     console.info(
-      "[Excalidraw] ExcalidrawWrapper/1, isCollaborating =",
+      "[Excalidraw/app] ExcalidrawWrapper, isCollaborating =",
       isCollaborationLink(window.location.href),
     );
     trackEvent("load", "frame", getFrame());
