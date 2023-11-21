@@ -125,7 +125,7 @@ class Collab extends PureComponent<Props, CollabState> {
 
         const storageBackend = await getStorageBackend();
         return storageBackend.loadFilesFromStorageBackend(
-          `files/rooms/${roomId}`,
+          `${FIREBASE_STORAGE_PREFIXES.shareLinkFiles}/${roomId}`,
           roomKey,
           fileIds,
         );
@@ -375,8 +375,8 @@ class Collab extends PureComponent<Props, CollabState> {
     console.info(
       "[Excalidraw/app] startCollaboration, socket =",
       this.portal.socket,
-      ", existingRoomLinkData =",
-      existingRoomLinkData,
+      ", roomId =",
+      existingRoomLinkData?.roomId,
     );
     if (this.portal.socket) {
       return null;

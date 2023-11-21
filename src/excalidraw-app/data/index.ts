@@ -321,6 +321,7 @@ export const exportToBackend = async (
   appState: AppState,
   files: BinaryFiles,
 ) => {
+  console.info("[Excalidraw/app] exportToBackend");
   const encryptionKey = await generateEncryptionKey("string");
 
   const payload = await compressData(
