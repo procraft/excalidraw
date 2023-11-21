@@ -19,7 +19,8 @@ import { reconcileElements } from "../collab/reconciliation";
 import { decryptData } from "../../data/encryption";
 import { StoredScene } from "./StorageBackend";
 
-const HTTP_STORAGE_BACKEND_URL = "https://vi-excalidraw-collab.libicraft.ru"; // "http://localhost:3003/api/v2"; // process.env.REACT_APP_HTTP_STORAGE_BACKEND_URL;
+const HTTP_STORAGE_BACKEND_URL =
+  "https://vi-excalidraw-collab.libicraft.ru/api/v2"; // "http://localhost:3003/api/v2"; // process.env.REACT_APP_HTTP_STORAGE_BACKEND_URL;
 const SCENE_VERSION_LENGTH_BYTES = 4;
 
 console.info("[Excalidraw/app] Use backend host:", HTTP_STORAGE_BACKEND_URL);
@@ -52,6 +53,7 @@ export const saveToHttpStorage = async (
   appState: AppState,
 ) => {
   const { roomId, roomKey, socket } = portal;
+  console.info("[Excalidraw/app] saveToHttpStorage", roomId);
   if (
     // if no room exists, consider the room saved because there's nothing we can
     // do at this point
@@ -119,8 +121,7 @@ export const loadFromHttpStorage = async (
   roomKey: string,
   socket: SocketIOClient.Socket | null,
 ): Promise<readonly ExcalidrawElement[] | null> => {
-  const HTTP_STORAGE_BACKEND_URL =
-    process.env.REACT_APP_HTTP_STORAGE_BACKEND_URL;
+  console.info("[Excalidraw/app] loadFromHttpStorage", roomId);
   const getResponse = await fetch(
     `${HTTP_STORAGE_BACKEND_URL}/rooms/${roomId}`,
   );
@@ -165,11 +166,9 @@ export const saveFilesToHttpStorage = async ({
   prefix: string;
   files: { id: FileId; buffer: Uint8Array }[];
 }) => {
+  console.info("[Excalidraw/app] saveFilesToHttpStorage", files);
   const erroredFiles = new Map<FileId, true>();
   const savedFiles = new Map<FileId, true>();
-
-  const HTTP_STORAGE_BACKEND_URL =
-    process.env.REACT_APP_HTTP_STORAGE_BACKEND_URL;
 
   await Promise.all(
     files.map(async ({ id, buffer }) => {
@@ -195,6 +194,7 @@ export const loadFilesFromHttpStorage = async (
   decryptionKey: string,
   filesIds: readonly FileId[],
 ) => {
+  console.info("[Excalidraw/app] loadFilesFromHttpStorage", filesIds);
   const loadedFiles: BinaryFileData[] = [];
   const erroredFiles = new Map<FileId, true>();
 
@@ -202,8 +202,6 @@ export const loadFilesFromHttpStorage = async (
   await Promise.all(
     [...new Set(filesIds)].map(async (id) => {
       try {
-        const HTTP_STORAGE_BACKEND_URL =
-          process.env.REACT_APP_HTTP_STORAGE_BACKEND_URL;
         const response = await fetch(`${HTTP_STORAGE_BACKEND_URL}/files/${id}`);
         if (response.status < 400) {
           const arrayBuffer = await response.arrayBuffer();
