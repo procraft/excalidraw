@@ -262,7 +262,7 @@ class Collab extends PureComponent<CollabProps, CollabState> {
         );
       }
     } catch (error: any) {
-      console.error(error);
+      console.error("[Excalidraw/pkg] saveCollabRoomToFirebase error:", error);
     }
   };
 
@@ -438,7 +438,7 @@ class Collab extends PureComponent<CollabProps, CollabState> {
 
       this.portal.socket.once("connect_error", fallbackInitializationHandler);
     } catch (error: any) {
-      console.error(error);
+      console.error("[Excalidraw/pkg] startCollaboration error:", error);
       this.setState({ errorMessage: error.message });
       return null;
     }
@@ -592,10 +592,19 @@ class Collab extends PureComponent<CollabProps, CollabState> {
           roomLinkData.roomKey,
           this.portal.socket,
         );
+        console.info(
+          "[Excalidraw/pkg] load scene from storage",
+          roomLinkData.roomId,
+          elements,
+        );
         if (elements) {
-          this.setLastBroadcastedOrReceivedSceneVersion(
-            getSceneVersion(elements),
+          const version = getSceneVersion(elements);
+          console.info(
+            "[Excalidraw/pkg] load scene from storage, version:",
+            version,
           );
+          this.setLastBroadcastedOrReceivedSceneVersion(version);
+          console.info("[Excalidraw/pkg] load scene from storage, after set");
 
           return {
             elements,
@@ -604,7 +613,7 @@ class Collab extends PureComponent<CollabProps, CollabState> {
         }
       } catch (error: any) {
         // log the error and move on. other peers will sync us the scene.
-        console.error(error);
+        console.error("[Excalidraw/pkg] initializeRoom error:", error);
       } finally {
         this.portal.socketInitialized = true;
       }

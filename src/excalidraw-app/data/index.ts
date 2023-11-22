@@ -70,18 +70,23 @@ export const getCollabServer = async (
   url: string;
   polling: boolean;
 }> => {
-  const collabServerUrlHardcode = "https://vi-excalidraw-ws.libicraft.ru"; //http://localhost:3002";
-  // console.info(
-  //   "[Excalidraw/app] Use collab server from hardcode:",
-  //   collabServerUrlHardcode,
-  // );
+  const collabServerUrlHardcode = document.location.host.startsWith("localhost")
+    ? "http://localhost:3002"
+    : "https://vi-excalidraw-ws.libicraft.ru";
+  console.info(
+    "[Excalidraw/app] Use backend ws host from hardcode:",
+    collabServerUrlHardcode,
+  );
   return {
     url: collabServerUrlHardcode,
     polling: true,
   };
 
   // if (collabServerUrl) {
-  //   console.info("[Excalidraw/app] Use collab server from props:", collabServerUrl);
+  //   console.info(
+  //     "[Excalidraw/app] Use backend ws host from props:",
+  //     collabServerUrl,
+  //   );
   //   return {
   //     url: collabServerUrl,
   //     polling: true,
@@ -90,7 +95,7 @@ export const getCollabServer = async (
   //
   // if (process.env.REACT_APP_WS_SERVER_URL) {
   //   console.info(
-  //     "[Excalidraw/app] Use collab server from env:",
+  //     "[Excalidraw/app] Use backend ws host from env:",
   //     process.env.REACT_APP_WS_SERVER_URL,
   //   );
   //   return {
@@ -101,7 +106,7 @@ export const getCollabServer = async (
   //
   // try {
   //   console.info(
-  //     "[Excalidraw/app] Use collab server from url:",
+  //     "[Excalidraw/app] Use backend ws host from url:",
   //     `${process.env.REACT_APP_PORTAL_URL}/collab-server`,
   //   );
   //   const resp = await fetch(
@@ -181,10 +186,11 @@ export const getCollaborationLinkData = (link: string) => {
     window.alert(t("alerts.invalidEncryptionKey"));
     return null;
   }
-  console.info(
-    "[Excalidraw/app] getCollaborationLinkData, roomKey read success",
-  );
-  return match ? { roomId, roomKey: match[1] } : null;
+  if (match && match[1]) {
+    const roomKey = match[1];
+    return { roomId, roomKey };
+  }
+  return null;
 };
 
 export const generateCollaborationLinkData = async () => {

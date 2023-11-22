@@ -587,6 +587,11 @@ class Collab extends PureComponent<Props, CollabState> {
           roomLinkData.roomKey,
           this.portal.socket,
         );
+        console.info(
+          "[Excalidraw/pkg] load scene from storage",
+          roomLinkData.roomId,
+          elements,
+        );
         if (elements) {
           this.setLastBroadcastedOrReceivedSceneVersion(
             getSceneVersion(elements),

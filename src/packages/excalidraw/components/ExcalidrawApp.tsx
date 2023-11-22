@@ -200,12 +200,12 @@ const ExcalidrawWrapper = (props: ExcalidrawAppProps) => {
   }
 
   useEffect(() => {
-    console.info(
-      "[Excalidraw/pkg] ExcalidrawWrapper, href =",
-      window.location.href,
-      ", isCollaborating =",
-      isCollaborationLink(window.location.href),
-    );
+    // console.info(
+    //   "[Excalidraw/pkg] ExcalidrawWrapper, href =",
+    //   window.location.href,
+    //   ", isCollaborating =",
+    //   isCollaborationLink(window.location.href),
+    // );
     trackEvent("load", "frame", getFrame());
     // Delayed so that the app has a time to load the latest SW
     setTimeout(() => {
