@@ -71,10 +71,10 @@ export const getCollabServer = async (
   polling: boolean;
 }> => {
   const collabServerUrlHardcode = "https://vi-excalidraw-ws.libicraft.ru"; //http://localhost:3002";
-  console.info(
-    "[Excalidraw/app] Use collab server from hardcode:",
-    collabServerUrlHardcode,
-  );
+  // console.info(
+  //   "[Excalidraw/app] Use collab server from hardcode:",
+  //   collabServerUrlHardcode,
+  // );
   return {
     url: collabServerUrlHardcode,
     polling: true,
@@ -163,29 +163,28 @@ export type SocketUpdateData =
     _brand: "socketUpdateData";
   };
 
-const RE_COLLAB_LINK = /^#room=([a-zA-Z0-9_-]+),([a-zA-Z0-9_-]+)$/;
+const RE_COLLAB_LINK = /config\.excalidrawKey="([^"]+)/;
 
 export const isCollaborationLink = (link: string) => {
-  return true;
-  // const hash = new URL(link).hash;
-  // return RE_COLLAB_LINK.test(hash);
+  const hash = decodeURIComponent(new URL(link).hash);
+  const has = RE_COLLAB_LINK.test(hash);
+  // console.info("[Excalidraw/app] isCollaborationLink, hash =", hash, ", result =", has)
+  return has;
 };
 
 export const getCollaborationLinkData = (link: string) => {
-  const hash = new URL(link).hash;
-  const match = (() => {
-    if (hash) {
-      return hash.match(RE_COLLAB_LINK);
-    }
-    const url = new URL(link);
-    const room = url.pathname.substring(1);
-    return ["", room, room.repeat(10).substring(0, 22)];
-  })();
-  if (match && match[2].length !== 22) {
+  const hash = decodeURIComponent(new URL(link).hash);
+  const url = new URL(link);
+  const roomId = url.pathname.substring(1);
+  const match = hash.match(RE_COLLAB_LINK);
+  if (match && match[1].length !== 22) {
     window.alert(t("alerts.invalidEncryptionKey"));
     return null;
   }
-  return match ? { roomId: match[1], roomKey: match[2] } : null;
+  console.info(
+    "[Excalidraw/app] getCollaborationLinkData, roomKey read success",
+  );
+  return match ? { roomId, roomKey: match[1] } : null;
 };
 
 export const generateCollaborationLinkData = async () => {
@@ -321,7 +320,7 @@ export const exportToBackend = async (
   appState: AppState,
   files: BinaryFiles,
 ) => {
-  console.info("[Excalidraw/app] exportToBackend");
+  // console.info("[Excalidraw/app] exportToBackend");
   const encryptionKey = await generateEncryptionKey("string");
 
   const payload = await compressData(

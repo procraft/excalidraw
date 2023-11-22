@@ -53,7 +53,7 @@ export const saveToHttpStorage = async (
   appState: AppState,
 ) => {
   const { roomId, roomKey, socket } = portal;
-  console.info("[Excalidraw/app] saveToHttpStorage", roomId);
+  // console.info("[Excalidraw/app] saveToHttpStorage", roomId);
   if (
     // if no room exists, consider the room saved because there's nothing we can
     // do at this point
@@ -121,7 +121,7 @@ export const loadFromHttpStorage = async (
   roomKey: string,
   socket: SocketIOClient.Socket | null,
 ): Promise<readonly ExcalidrawElement[] | null> => {
-  console.info("[Excalidraw/app] loadFromHttpStorage", roomId);
+  // console.info("[Excalidraw/app] loadFromHttpStorage", roomId);
   const getResponse = await fetch(
     `${HTTP_STORAGE_BACKEND_URL}/rooms/${roomId}`,
   );
@@ -166,7 +166,7 @@ export const saveFilesToHttpStorage = async ({
   prefix: string;
   files: { id: FileId; buffer: Uint8Array }[];
 }) => {
-  console.info("[Excalidraw/app] saveFilesToHttpStorage", files);
+  // console.info("[Excalidraw/app] saveFilesToHttpStorage", files);
   const erroredFiles = new Map<FileId, true>();
   const savedFiles = new Map<FileId, true>();
 
@@ -194,7 +194,7 @@ export const loadFilesFromHttpStorage = async (
   decryptionKey: string,
   filesIds: readonly FileId[],
 ) => {
-  console.info("[Excalidraw/app] loadFilesFromHttpStorage", filesIds);
+  // console.info("[Excalidraw/app] loadFilesFromHttpStorage", filesIds);
   const loadedFiles: BinaryFileData[] = [];
   const erroredFiles = new Map<FileId, true>();
 

@@ -4964,7 +4964,7 @@ class App extends React.Component<AppProps, AppState> {
     imageFile: File,
     showCursorImagePreview?: boolean,
   ) => {
-    console.info("[Excalidraw/app] insertImageElement", imageFile.name);
+    // console.info("[Excalidraw/app] insertImageElement", imageFile.name);
     this.scene.replaceAllElements([
       ...this.scene.getElementsIncludingDeleted(),
       imageElement,

@@ -37,11 +37,7 @@ import {
   SocketUpdateDataSource,
   SyncableExcalidrawElement,
 } from "../../../excalidraw-app/data";
-import {
-  isSavedToFirebase,
-  loadFilesFromFirebase,
-  saveFilesToFirebase,
-} from "../../../excalidraw-app/data/firebase";
+import { isSavedToFirebase } from "../../../excalidraw-app/data/firebase";
 import {
   importUsernameFromLocalStorage,
   saveUsernameToLocalStorage,
@@ -109,6 +105,8 @@ class Collab extends PureComponent<CollabProps, CollabState> {
 
   constructor(props: CollabProps) {
     super(props);
+
+    // console.info("[Excalidraw/pkg] Collab constructor");
     this.state = {
       errorMessage: "",
       username: importUsernameFromLocalStorage() || "",
@@ -120,19 +118,27 @@ class Collab extends PureComponent<CollabProps, CollabState> {
     this.fileManager = new FileManager({
       getFiles: async (fileIds) => {
         const { roomId, roomKey } = this.portal;
+        // console.info("[Excalidraw/pkg] fileManager.getFiles", roomId);
         if (!roomId || !roomKey) {
           throw new AbortError();
         }
 
-        return loadFilesFromFirebase(`files/rooms/${roomId}`, roomKey, fileIds);
+        const storageBackend = await getStorageBackend();
+        return storageBackend.loadFilesFromStorageBackend(
+          `${FIREBASE_STORAGE_PREFIXES.shareLinkFiles}/${roomId}`,
+          roomKey,
+          fileIds,
+        );
       },
       saveFiles: async ({ addedFiles }) => {
         const { roomId, roomKey } = this.portal;
+        // console.info("[Excalidraw/pkg] fileManager.saveFiles", roomId);
         if (!roomId || !roomKey) {
           throw new AbortError();
         }
 
-        return saveFilesToFirebase({
+        const storageBackend = await getStorageBackend();
+        return storageBackend.saveFilesToStorageBackend({
           prefix: `${FIREBASE_STORAGE_PREFIXES.collabFiles}/${roomId}`,
           files: await encodeFilesForUpload({
             files: addedFiles,
@@ -367,10 +373,10 @@ class Collab extends PureComponent<CollabProps, CollabState> {
   startCollaboration = async (
     existingRoomLinkData: null | { roomId: string; roomKey: string },
   ): Promise<ImportedDataState | null> => {
-    console.info(
-      "[Excalidraw/pkg] startCollaboration, socket =",
-      this.portal.socket,
-    );
+    // console.info(
+    //   "[Excalidraw/pkg] startCollaboration, socket =",
+    //   this.portal.socket,
+    // );
     if (this.portal.socket) {
       return null;
     }
@@ -409,10 +415,10 @@ class Collab extends PureComponent<CollabProps, CollabState> {
     this.fallbackInitializationHandler = fallbackInitializationHandler;
 
     try {
-      console.info(
-        "[Excalidraw/pkg] startCollaboration, collabServerUrl =",
-        this.props.collabServerUrl,
-      );
+      // console.info(
+      //   "[Excalidraw/pkg] startCollaboration, collabServerUrl =",
+      //   this.props.collabServerUrl,
+      // );
       const socketServerData = await getCollabServer(
         this.props.collabServerUrl,
       );
@@ -538,9 +544,9 @@ class Collab extends PureComponent<CollabProps, CollabState> {
     );
 
     this.portal.socket.on("first-in-room", async () => {
-      console.info(
-        "[Excalidraw/pkg] startCollaboration, socket message: First in room",
-      );
+      // console.info(
+      //   "[Excalidraw/pkg] startCollaboration, socket message: First in room",
+      // );
       if (this.portal.socket) {
         this.portal.socket.off("first-in-room");
       }

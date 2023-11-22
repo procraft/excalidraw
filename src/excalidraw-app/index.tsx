@@ -181,7 +181,7 @@ export const initializeScene = async (opts: {
     }
   }
 
-  console.info("[Excalidraw/app] ExcalidrawApp, roomLinkData =", roomLinkData);
+  // console.info("[Excalidraw/app] ExcalidrawApp, roomLinkData =", roomLinkData);
   if (roomLinkData) {
     return {
       scene: await opts.collabAPI.startCollaboration(roomLinkData),
@@ -246,10 +246,10 @@ const ExcalidrawWrapper = () => {
   }
 
   useEffect(() => {
-    console.info(
-      "[Excalidraw/app] ExcalidrawWrapper, isCollaborating =",
-      isCollaborationLink(window.location.href),
-    );
+    // console.info(
+    //   "[Excalidraw/app] ExcalidrawWrapper, isCollaborating =",
+    //   isCollaborationLink(window.location.href),
+    // );
     trackEvent("load", "frame", getFrame());
     // Delayed so that the app has a time to load the latest SW
     setTimeout(() => {
@@ -566,6 +566,7 @@ const ExcalidrawWrapper = () => {
     files: BinaryFiles,
     canvas: HTMLCanvasElement | null,
   ) => {
+    // console.info("[Excalidraw/app] onExportToBackend")
     if (exportedElements.length === 0) {
       return window.alert(t("alerts.cannotExportEmptyCanvas"));
     }
