@@ -99,6 +99,7 @@ class Collab extends PureComponent<CollabProps, CollabState> {
   activeIntervalId: number | null;
   idleTimeoutId: number | null;
 
+  private isAlreadyStartInit = false;
   private socketInitializationTimer?: number;
   private lastBroadcastedOrReceivedSceneVersion: number = -1;
   private collaborators = new Map<string, Collaborator>();
@@ -575,6 +576,12 @@ class Collab extends PureComponent<CollabProps, CollabState> {
         roomLinkData: { roomId: string; roomKey: string } | null;
       }
     | { fetchScene: false; roomLinkData?: null }) => {
+    // Prevent repeated calls
+    if (this.isAlreadyStartInit) {
+      return { fetchScene: false, roomLinkData: null };
+    }
+    this.isAlreadyStartInit = true;
+
     clearTimeout(this.socketInitializationTimer!);
     if (this.portal.socket && this.fallbackInitializationHandler) {
       this.portal.socket.off(
@@ -586,7 +593,9 @@ class Collab extends PureComponent<CollabProps, CollabState> {
       this.excalidrawAPI.resetScene();
 
       try {
+        // console.info("[Excalidraw/pkg] load scene from storage, start try room:", roomLinkData.roomId);
         const storageBackend = await getStorageBackend();
+        // console.info("[Excalidraw/pkg] load scene from storage, storageBackend:", storageBackend);
         const elements = await storageBackend.loadFromStorageBackend(
           roomLinkData.roomId,
           roomLinkData.roomKey,
@@ -598,13 +607,9 @@ class Collab extends PureComponent<CollabProps, CollabState> {
           elements,
         );
         if (elements) {
-          const version = getSceneVersion(elements);
-          console.info(
-            "[Excalidraw/pkg] load scene from storage, version:",
-            version,
+          this.setLastBroadcastedOrReceivedSceneVersion(
+            getSceneVersion(elements),
           );
-          this.setLastBroadcastedOrReceivedSceneVersion(version);
-          console.info("[Excalidraw/pkg] load scene from storage, after set");
 
           return {
             elements,
